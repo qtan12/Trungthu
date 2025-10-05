@@ -16,7 +16,6 @@ const messages = [
     { text: "Chúc em Trung Thu vui vẻ!", img: "https://i.pinimg.com/originals/81/66/c3/8166c341a2030a2a0d28a5a6e1bf961b.gif" },
     { text: "Trăng rằm sáng nhất đêm nay, nhưng vẫn không bằng nụ cười của em!", img: "https://i.pinimg.com/originals/33/76/db/3376dbdfc1b6e8b71a2ea7353e4fc0f2.gif" },
     { text: "Trung Thu mà em không ở đây thì coi như… trăng bị mây che mất 🏮", img: "./style/img/anh 1.jpg" }, 
-    { text: "Trung thu có muốn đi chơi cùng anh hông nè", img: "https://i.pinimg.com/originals/3a/fc/12/3afc12d6744a68594d29eb565c62244c.gif" },
     { text: "Em là món quà trung thu ý nghĩa nhất của anh 🏮", img: "./style/img/anh 2.jpg" }, 
     { text: "Trung Thu này, có em là đủ ngọt hơn mọi loại bánh 🍰", img: "./style/img/anh 3.jpg" }, 
     { text: "Trung Thu vui vẻ nha bé 💖🌙", img: "https://i.pinimg.com/originals/2f/82/bb/2f82bb5524663e046922d08a1cdb2ddd.gif" },
@@ -32,6 +31,7 @@ const messages = [
     { text: "Nếu có một điều ước trong đêm rằm, anh ước lúc nào cũng có em cạnh bên 🌙", img: "./style/img/anh 12.jpg" },
     { text: "Em chính là điều ước của anh dưới trăng 🥮", img: "./style/img/anh 13.jpg" },
     { text: "Em chính là lý do để mỗi mùa trăng tròn anh lại thấy hạnh phúc hơn 💕", img: "./style/img/anh 13.jpg" },
+    { text: "Trung thu có muốn đi chơi cùng anh hông nè", img: "https://i.pinimg.com/originals/3a/fc/12/3afc12d6744a68594d29eb565c62244c.gif" },
     { text: "Ăn bánh Trung Thu dễ ngán, yêu em thì… nghiện luôn ✨", img: "./style/img/anh 14.jpg" },
     { text: "Bánh Trung Thu thì nhiều vị, nhưng vị ngọt nhất là tình mình 🌟", img: "./style/img/anh 15.jpg" },
 ];
@@ -39,6 +39,27 @@ const messages = [
 const lanternsContainer = document.getElementById("lanternsContainer");
 let maxLanterns = window.innerWidth < 600 ? 15 : 30;
 let lanternInterval = null;
+
+// Optimize random message selection to avoid duplicates
+let shuffledMessages = [];
+let messageIndex = 0;
+
+function shuffleArray(array) {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+}
+
+function getNextMessage() {
+    if (shuffledMessages.length === 0 || messageIndex >= shuffledMessages.length) {
+        shuffledMessages = shuffleArray(messages);
+        messageIndex = 0;
+    }
+    return shuffledMessages[messageIndex++];
+}
 
 function createLantern() {
     if (lanternsContainer.querySelectorAll(".lantern").length >= maxLanterns) return;
@@ -59,11 +80,11 @@ function createLantern() {
     lantern.style.animationDuration = duration + "s";
 
     lantern.addEventListener("click", () => {
-    let randomMsg = messages[Math.floor(Math.random() * messages.length)];
-    document.getElementById("popupText").innerText = randomMsg.text;
-    document.getElementById("popupImg").src = randomMsg.img;
-    document.getElementById("popup").classList.add("show");
-    document.getElementById("overlay").classList.add("show");
+        let randomMsg = getNextMessage();
+        document.getElementById("popupText").innerText = randomMsg.text;
+        document.getElementById("popupImg").src = randomMsg.img;
+        document.getElementById("popup").classList.add("show");
+        document.getElementById("overlay").classList.add("show");
     });
 
     lanternsContainer.appendChild(lantern);
