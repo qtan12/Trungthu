@@ -1,17 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Thiết lập meta tags cơ bản -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Trung Thu em bé cute</title>
+  
+  <!-- Import Google Fonts cho typography -->
   <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <!-- Link CSS file -->
   <link rel="stylesheet" href="./style/style.css">
 </head>
 <body>
+  <!-- Hình ảnh mặt trăng -->
   <img class="moon" src="./style/img/moon.png" alt="Moon">
+  
+  <!-- Container chứa tất cả lồng đèn bay -->
   <div id="lanternsContainer"></div>
+  
+  <!-- Overlay mờ phía sau popup -->
   <div id="overlay"></div>
 
+  <!-- Popup hiển thị tin nhắn lãng mạn -->
   <div id="popup">
     <p id="popupText"></p>
     <img id="popupImg" src="" alt="popup image">
@@ -19,9 +29,13 @@
     <button onclick="closePopup()">Đóng</button>
   </div>
   
+  <!-- Nút thả lồng đèn -->
   <button id="releaseBtn">Thả đèn</button>
+  
+  <!-- Nhạc nền -->
   <audio id="bgMusic" src="./style/LoiTheDuoiAnhTrang.mp3" loop></audio>
 
+  <!-- JavaScript file -->
   <script src="./style/script.js"></script>
 </body>
 </html>

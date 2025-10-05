@@ -1,17 +1,25 @@
+// Tạo hiệu ứng bầu trời đêm với các ngôi sao
+// Số lượng sao phụ thuộc vào kích thước màn hình (mobile: 80 sao, desktop: 200 sao)
 const starCount = window.innerWidth < 600 ? 80 : 200;
 for (let i = 0; i < starCount; i++) {
     let star = document.createElement("div");
     star.className = "star";
+    // Vị trí ngẫu nhiên: 0-100% chiều cao và chiều rộng màn hình
     star.style.top = Math.random() * 100 + "vh";
     star.style.left = Math.random() * 100 + "vw";
+    // Tốc độ nhấp nháy ngẫu nhiên: 1-3 giây
     star.style.animationDuration = (1 + Math.random() * 2) + "s";
+    // Độ trong suốt ngẫu nhiên để tạo sự đa dạng
     star.style.opacity = Math.random();
     document.body.appendChild(star);
 }
 
+// Mảng chứa đường dẫn hình ảnh lồng đèn để chọn ngẫu nhiên
 const lanternImages = [];
 for (let i = 1; i <= 9; i++) lanternImages.push(`./style/img/lantern/ld (${i}).png`);
 
+// Mảng chứa các tin nhắn lãng mạn với hình ảnh tương ứng
+// Mỗi tin nhắn có text và img để hiển thị trong popup
 const messages = [
     { text: "Chúc em Trung Thu vui vẻ!", img: "https://i.pinimg.com/originals/81/66/c3/8166c341a2030a2a0d28a5a6e1bf961b.gif" },
     { text: "Trăng rằm sáng nhất đêm nay, nhưng vẫn không bằng nụ cười của em!", img: "https://i.pinimg.com/originals/33/76/db/3376dbdfc1b6e8b71a2ea7353e4fc0f2.gif" },
@@ -36,14 +44,16 @@ const messages = [
     { text: "Bánh Trung Thu thì nhiều vị, nhưng vị ngọt nhất là tình mình 🌟", img: "./style/img/anh 15.jpg" },
 ];
 
+// Lấy container cho lồng đèn và thiết lập số lượng tối đa dựa trên kích thước màn hình
 const lanternsContainer = document.getElementById("lanternsContainer");
 let maxLanterns = window.innerWidth < 600 ? 15 : 30;
 let lanternInterval = null;
 
-// Optimize random message selection to avoid duplicates
+// Tối ưu hóa việc chọn tin nhắn ngẫu nhiên để tránh trùng lặp
 let shuffledMessages = [];
 let messageIndex = 0;
 
+// Thuật toán Fisher-Yates shuffle để xáo trộn thứ tự tin nhắn
 function shuffleArray(array) {
     const shuffled = [...array];
     for (let i = shuffled.length - 1; i > 0; i--) {
@@ -53,6 +63,7 @@ function shuffleArray(array) {
     return shuffled;
 }
 
+// Lấy tin nhắn tiếp theo theo thứ tự đã xáo trộn, reset khi đã dùng hết
 function getNextMessage() {
     if (shuffledMessages.length === 0 || messageIndex >= shuffledMessages.length) {
         shuffledMessages = shuffleArray(messages);
@@ -61,24 +72,29 @@ function getNextMessage() {
     return shuffledMessages[messageIndex++];
 }
 
+// Tạo và animate một chiếc lồng đèn bay
 function createLantern() {
+    // Giới hạn số lượng lồng đèn để tránh vấn đề hiệu suất
     if (lanternsContainer.querySelectorAll(".lantern").length >= maxLanterns) return;
 
+    // Tạo element hình ảnh lồng đèn
     let lantern = document.createElement("img");
     lantern.src = lanternImages[Math.floor(Math.random() * lanternImages.length)];
     lantern.className = "lantern";
 
-    // Giới hạn lantern không tràn màn hình
+    // Thiết lập vị trí bắt đầu (0-85% để tránh tràn màn hình)
     let startX = Math.random() * 85; // 0% -> 85%
     lantern.style.left = startX + "vw";
 
-    // random horizontal drift
+    // Độ lệch ngang ngẫu nhiên trong quá trình bay (±25vw)
     let driftX = (Math.random() - 0.5) * 50; // ±25vw
     lantern.style.setProperty('--x', driftX + 'vw');
 
+    // Thời gian bay ngẫu nhiên (10-20 giây)
     let duration = 10 + Math.random() * 10;
     lantern.style.animationDuration = duration + "s";
 
+    // Thêm sự kiện click để hiển thị tin nhắn lãng mạn
     lantern.addEventListener("click", () => {
         let randomMsg = getNextMessage();
         document.getElementById("popupText").innerText = randomMsg.text;
@@ -87,25 +103,34 @@ function createLantern() {
         document.getElementById("overlay").classList.add("show");
     });
 
+    // Thêm lồng đèn vào container và xóa khi animation kết thúc
     lanternsContainer.appendChild(lantern);
     lantern.addEventListener("animationend", () => lantern.remove());
 }
 
+// Xử lý sự kiện click nút thả lồng đèn để bắt đầu animation
 const song = document.getElementById("bgMusic");
 document.getElementById("releaseBtn").addEventListener("click", () => {
     if (!lanternInterval) {
-    song.currentTime = 57;
-    song.play();
-    lanternInterval = setInterval(() => {
-        let count = 1 + Math.floor(Math.random() * 2);
-        for (let i = 0; i < count; i++) createLantern();
-    }, 1200);
-    document.getElementById("releaseBtn").style.display = "none";
+        // Bắt đầu nhạc từ thời điểm cụ thể (57 giây)
+        song.currentTime = 57;
+        song.play();
+        
+        // Tạo lồng đèn mỗi 1.2 giây (1-2 lồng đèn mỗi lần)
+        lanternInterval = setInterval(() => {
+            let count = 1 + Math.floor(Math.random() * 2);
+            for (let i = 0; i < count; i++) createLantern();
+        }, 1200);
+        
+        // Ẩn nút thả sau khi bắt đầu
+        document.getElementById("releaseBtn").style.display = "none";
     }
 });
 
+// Đóng popup khi click overlay hoặc nút đóng
 function closePopup() {
     document.getElementById("popup").classList.remove("show");
     document.getElementById("overlay").classList.remove("show");
 }
+// Thêm sự kiện click vào overlay để đóng popup
 document.getElementById("overlay").addEventListener("click", closePopup);
